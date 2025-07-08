@@ -26,3 +26,20 @@
       command: docker compose up -d
       args:
         chdir: "{{ datadir }}/setup-testnet-node"
+
+    - name: Check and print running Sahara Testnet node containers
+      command: docker compose ps --services --filter "status=running"
+      args:
+        chdir: "{{ datadir }}/setup-testnet-node"
+      register: running_after_restart
+      changed_when: false
+
+    - name: Show running containers
+      debug:
+        msg: |
+          Running containers:
+          {% if running_after_restart.stdout_lines %}
+          {{ running_after_restart.stdout_lines | join('\n') }}
+          {% else %}
+          No containers are currently running.
+          {% endif %}
